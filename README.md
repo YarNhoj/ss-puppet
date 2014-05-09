@@ -1,0 +1,4 @@
+puppet.v
+========
+
+Puppet Vagrant
