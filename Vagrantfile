@@ -8,7 +8,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 config.vm.box = "centos-65-x64-nocm"
 config.vm.box_url = "http://puppet-vagrant-boxes.puppetlabs.com/centos-65-x64-virtualbox-nocm.box"
 
-pe_version = '3.2.2'
+pe_version = '3.3.0'
 config.pe_build.version       = pe_version
 config.pe_build.download_root = "https://s3.amazonaws.com/pe-builds/released/#{pe_version}"
 
@@ -33,46 +33,60 @@ config.vm.provision "shell",
 	inline: "service iptables stop"
 	end
 
-## agent 1
-	config.vm.define :agent1 do |agent|
+## Production 
+	config.vm.define :production do |prod|
 
-	agent.vm.provider :virtualbox
-	agent.vm.network :private_network,  ip: "10.10.100.111"
+	prod.vm.provider :virtualbox
+	prod.vm.network :private_network,  ip: "10.10.100.111"
 
-	agent.vm.hostname = 'agent1.puppetlabs.vm'
-	agent.vm.provision :hosts
+	prod.vm.hostname = 'production.puppetlabs.vm'
+	prod.vm.provision :hosts
 
-	agent.vm.provision :pe_bootstrap do |pe|
+	prod.vm.provision :pe_bootstrap do |pe|
 	pe.role   =  :agent
 	pe.master = 'master.puppetlabs.vm'
 	end
 	end
 
-## agent 2
-	config.vm.define :agent2 do |agent|
+## Development
+	config.vm.define :development do |dev|
 
-	agent.vm.provider :virtualbox
-	agent.vm.network :private_network,  ip: "10.10.100.112"
+	dev.vm.provider :virtualbox
+	dev.vm.network :private_network,  ip: "10.10.100.112"
 
-	agent.vm.hostname = 'agent2.puppetlabs.vm'
-	agent.vm.provision :hosts
+	dev.vm.hostname = 'development.puppetlabs.vm'
+	dev.vm.provision :hosts
 
-	agent.vm.provision :pe_bootstrap do |pe|
+	dev.vm.provision :pe_bootstrap do |pe|
 	pe.role   =  :agent
 	pe.master = 'master.puppetlabs.vm'
 	end
 	end
 
-## agent 3
-	config.vm.define :agent3 do |agent|
+## Testing 
+	config.vm.define :testing do |test|
 
-	agent.vm.provider :virtualbox
-	agent.vm.network :private_network,  ip: "10.10.100.113"
+	test.vm.provider :virtualbox
+	test.vm.network :private_network,  ip: "10.10.100.113"
 
-	agent.vm.hostname = 'agent3.puppetlabs.vm'
-	agent.vm.provision :hosts
+	test.vm.hostname = 'testing.puppetlabs.vm'
+	test.vm.provision :hosts
 
-	agent.vm.provision :pe_bootstrap do |pe|
+	test.vm.provision :pe_bootstrap do |pe|
+	pe.role   =  :agent
+	pe.master = 'master.puppetlabs.vm'
+	end
+	end
+## Registry/Git
+	config.vm.define :gitreg do |gr|
+
+	gr.vm.provider :virtualbox
+	gr.vm.network :private_network,  ip: "10.10.100.114"
+
+	gr.vm.hostname = 'testing.puppetlabs.vm'
+	gr.vm.provision :hosts
+
+	gr.vm.provision :pe_bootstrap do |pe|
 	pe.role   =  :agent
 	pe.master = 'master.puppetlabs.vm'
 	end
